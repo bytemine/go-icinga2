@@ -87,14 +87,14 @@ type event struct {
 	Type      StreamType
 }
 
-type checkResultVars struct {
+type CheckResultVars struct {
 	Attempt   float64
 	Reachable bool
 	State     State
 	StateType StateType `json:"state_type"`
 }
 
-type checkResult struct {
+type CheckResultData struct {
 	Active      bool
 	CheckSource string `json:"check_source"`
 	// Command is strings mixed with numbers (and maybe other types, who knows..), so use a []interface{} here.
@@ -108,8 +108,8 @@ type checkResult struct {
 	ScheduleStart   float64         `json:"schedule_start"`
 	State           State
 	Type            StreamType
-	VarsAfter       checkResultVars `json:"vars_after"`
-	VarsBefore      checkResultVars `json:"vars_before"`
+	VarsAfter       CheckResultVars `json:"vars_after"`
+	VarsBefore      CheckResultVars `json:"vars_before"`
 }
 
 // CheckResult events are the results of a check of a host/service.
@@ -123,7 +123,7 @@ type CheckResult struct {
 	Service string
 
 	// CheckResult has further data for the check that triggered this event.
-	CheckResult checkResult `json:"check_result"`
+	CheckResult CheckResultData `json:"check_result"`
 }
 
 // StateChange events are the result of a state change due to a check failing / going back to OK.
@@ -137,7 +137,7 @@ type StateChange struct {
 	Service string
 
 	// CheckResult has further data for the check that triggered this event.
-	CheckResult checkResult `json:"check_result"`
+	CheckResult CheckResultData `json:"check_result"`
 
 	// State for the host/service due to this event. See State constants.
 	State     State
@@ -154,7 +154,7 @@ type Notification struct {
 	Service string
 
 	// CheckResult has further data for the check that triggered this event.
-	CheckResult checkResult `json:"check_result"`
+	CheckResult CheckResultData `json:"check_result"`
 
 	// Users receiving a notification
 	Users []string
