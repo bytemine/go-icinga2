@@ -24,7 +24,7 @@ func (s State) String() string {
 	case StateCritical:
 		return "CRITICAL"
 	case StateUnknown:
-		return "UNKOWN"
+		return "UNKNOWN"
 	}
 	return ""
 }
