@@ -8,25 +8,51 @@ import (
 type State float64
 
 // Event state values.
+//
+// StateNil isn't an official Icinga2 value, but sometimes a nil value is required (e.g. we don't care for the value).
+// We have to live with -1 as "zero" value here, as the real zero is already in use for OK.
 const (
+	StateNil      State = -1
 	StateOK       State = 0.0
 	StateWarning  State = 1.0
 	StateCritical State = 2.0
 	StateUnknown  State = 3.0
+
+	StateStringNil      = ""
+	StateStringOK       = "OK"
+	StateStringWarning  = "WARNING"
+	StateStringCritical = "CRITICAL"
+	StateStringUnknown  = "UNKNOWN"
 )
 
 func (s State) String() string {
 	switch s {
 	case StateOK:
-		return "OK"
+		return StateStringOK
 	case StateWarning:
-		return "WARNING"
+		return StateStringWarning
 	case StateCritical:
-		return "CRITICAL"
+		return StateStringCritical
 	case StateUnknown:
-		return "UNKNOWN"
+		return StateStringUnknown
 	}
-	return ""
+	return StateStringNil
+}
+
+// NewState returns a new State by its name (StateString... constants).
+func NewState(name string) State {
+	switch name {
+	case StateStringOK:
+		return StateOK
+	case StateStringWarning:
+		return StateWarning
+	case StateStringCritical:
+		return StateCritical
+	case StateStringUnknown:
+		return StateUnknown
+	default:
+		return StateNil
+	}
 }
 
 // StateType of a host or service state.
@@ -36,17 +62,40 @@ func (s State) String() string {
 // See http://docs.icinga.org/icinga2/latest/doc/module/icinga2/chapter/monitoring-basics#hard-soft-states for more details.
 type StateType float64
 
-// Possible StateType values
+// Possible StateType values.
+//
+// Similar to State, we define StateTypeNil here.
 const (
+	StateTypeNil  StateType = -1
 	StateTypeSoft StateType = 0.0
 	StateTypeHard StateType = 1.0
+
+	StateTypeStringSoft = "SOFT"
+	StateTypeStringHard = "HARD"
+	StateTypeStringNil  = ""
 )
 
 func (s StateType) String() string {
-	if s == StateTypeSoft {
-		return "SOFT"
+	switch s {
+	case StateTypeSoft:
+		return StateTypeStringSoft
+	case StateTypeHard:
+		return StateTypeStringHard
+	default:
+		return StateTypeStringNil
 	}
-	return "HARD"
+}
+
+// NewStateType returns a StateType by its name (StateTypeString... constants).
+func NewStateType(name string) StateType {
+	switch name {
+	case StateTypeStringSoft:
+		return StateTypeSoft
+	case StateTypeStringHard:
+		return StateTypeHard
+	default:
+		return StateTypeNil
+	}
 }
 
 // NotificationType of a sent notification.
@@ -80,13 +129,13 @@ const (
 	AcknowledgementSticky AcknowledgementType = 2
 )
 
-//type Event interface{}
-
 type event struct {
 	Timestamp float64
 	Type      StreamType
 }
 
+// CheckResultVars is used in CheckResultData for the fields VarsAfter and VarsBefore.
+// It is exported to permit the manual construction of CheckResult values.
 type CheckResultVars struct {
 	Attempt   float64
 	Reachable bool
@@ -94,6 +143,8 @@ type CheckResultVars struct {
 	StateType StateType `json:"state_type"`
 }
 
+// CheckResultData is used in CheckResult for the field CheckResult.
+// It is exported to permit the manual construction of CheckResult values.
 type CheckResultData struct {
 	Active      bool
 	CheckSource string `json:"check_source"`
